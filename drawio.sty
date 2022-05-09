@@ -1,0 +1,30 @@
+% Copyright 2020 Raffaele Zippo
+% MIT License
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{drawio}[2020/05/29 draw.io]
+
+\RequirePackage{shellesc}
+\RequirePackage{graphicx}
+\RequirePackage{filemod}
+
+\newread\tmpread
+
+\DeclareRobustCommand{\includediagram}[2][]{
+    \filename@parse{#2}
+    
+    \openin\tmpread=#2.drawio
+    \closein\tmpread
+
+    \filemodcmp{#2.drawio}{#2.pdf}
+    {
+        \immediate\write18{%
+            drawio --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox >> drawio.log 2>&1
+        }
+    }
+    {
+        \typeout{drawio: #2.pdf is newer than #2.drawio; skip conversion}
+    }
+    
+    \includegraphics[#1]{#2.pdf}
+}
