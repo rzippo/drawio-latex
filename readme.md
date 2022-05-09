@@ -1,10 +1,12 @@
 # A LaTeX package for [draw.io](https://www.diagrams.net/) diagrams
 
-This package can be used to directly include `.drawio` files in your LaTeX documents.
+This package can be used to directly include `.drawio` figures in your LaTeX documents.
 
 ## Requirements
 
 You need the `draw.io` desktop app installed and callable as `drawio`.
+
+> You can test this running `drawio --help`. Note that you need a graphical environment, or at least use `xvfb`, as in [this issue](https://github.com/jgraph/drawio-desktop/issues/146).
 
 ## Usage
 
