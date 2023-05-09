@@ -2,11 +2,12 @@
 % MIT License
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{drawio}[2020/05/29 draw.io]
+\ProvidesPackage{drawio}[2023/05/09 draw.io]
 
 \RequirePackage{shellesc}
 \RequirePackage{graphicx}
 \RequirePackage{filemod}
+\RequirePackage{ifplatform}
 
 \newread\tmpread
 
@@ -18,9 +19,21 @@
 
     \filemodcmp{#2.drawio}{#2.pdf}
     {
-        \immediate\write18{%
-            drawio --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox >> drawio.log 2>&1
-        }
+        \ifwindows
+            \typeout{Running: draw.io.exe --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox}
+            % if run from VS Code, the command would inherit the environment variable ELECTRON_RUN_AS_NODE=1
+            % which causes this bug https://github.com/microsoft/vscode-cmake-tools/issues/1545 to appear.
+            % this was NOT fun to debug
+            \immediate\write18{%
+                set "ELECTRON_RUN_AS_NODE=" &
+                draw.io.exe --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox >> drawio.log 2>&1
+            }
+        \else
+            \typeout{Running: drawio --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox}
+            \immediate\write18{%
+                drawio --crop --export --format pdf --output #2.pdf  #2.drawio --no-sandbox >> drawio.log 2>&1
+            }
+        \fi
     }
     {
         \typeout{drawio: #2.pdf is newer than #2.drawio; skip conversion}
